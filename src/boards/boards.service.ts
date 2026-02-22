@@ -1,48 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { BoardStatus } from './board-status.enum';
-import { v1 as uuid } from 'uuid';
+import { Injectable } from '@nestjs/common';
+import { BoardRepository } from './board.repository';
 import { CreateBoardDto } from './dto/create-board.dto';
+import { Board } from './board.entity';
+import { BoardStatus } from './board-status.enum';
 
 @Injectable()
 export class BoardsService {
+  constructor(private readonly boardRepository: BoardRepository) {}
 
-  // getAllBoards(): Board[] {
-  //   return this.boards;
-  // }
+  getAllBoards(): Promise<Board[]> {
+    return this.boardRepository.findAll();
+  }
 
-  // createBoard(createBoardDto: CreateBoardDto): Board {
-  //   const { title, description } = createBoardDto;
+  createBoard(dto: CreateBoardDto): Promise<Board> {
+    return this.boardRepository.createBoard(dto);
+  }
 
-  //   const board: Board = {
-  //     id: uuid(),
-  //     title,
-  //     description,
-  //     status: BoardStatus.PUBLIC,
-  //   };
+  getBoardById(id: string): Promise<Board> {
+    return this.boardRepository.findByIdOrThrow(id);
+  }
 
-  //   this.boards.push(board);
-  //   return board;
-  // }
+  deleteBoard(id: string): Promise<void> {
+    return this.boardRepository.deleteByIdOrThrow(id);
+  }
 
-  // getBoardById(id: string): Board {
-  //   const found = this.boards.find((board) => board.id === id);
-
-  //   if (!found) {
-  //     throw new NotFoundException(`Board with ID "${id}" not found`);
-  //   }
-
-  //   return found;
-  // }
-
-  // deleteBoard(id: string): void {
-  //   const found = this.getBoardById(id);
-  //   this.boards = this.boards.filter((board) => board.id !== id)
-  // }
-
-  // updateBoardStatus(id: string, status: BoardStatus): Board {
-  //   const board = this.getBoardById(id);
-
-  //   board.status = status;
-  //   return board;
-  // }
+  updateBoardStatus(id: string, status: BoardStatus): Promise<Board> {
+    return this.boardRepository.updateStatus(id, status);
+  }
 }
